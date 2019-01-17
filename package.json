@@ -8,11 +8,15 @@
   },
   "dependencies": {
     "expo": "^32.0.0",
+    "knuth": "^1.0.0",
     "react": "16.5.0",
     "react-native": "https://github.com/expo/react-native/archive/sdk-32.0.0.tar.gz"
   },
   "devDependencies": {
-    "babel-preset-expo": "^5.0.0"
+    "babel-eslint": "^10.0.1",
+    "babel-preset-expo": "^5.0.0",
+    "eslint": "^5.12.0",
+    "eslint-plugin-react": "^7.12.3"
   },
   "private": true
 }
