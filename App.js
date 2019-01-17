@@ -1,7 +1,7 @@
 'use strict';
 
 import React from 'react';
-import { Text, View, TouchableHighlight } from 'react-native';
+import { Text, View, TouchableOpacity } from 'react-native';
 import shuffle from 'knuth';
 import KatakanaMap from './katakanamap';
 
@@ -52,19 +52,15 @@ export default class App extends React.Component {
 
     const renderChoices = () => {
       return allChoices.map(choice => {
-        if (choice !== CorrectAnswer) {
-          return (
-            <TouchableHighlight underlayColor={styles.wrongChoice} style={styles.choice} onPress={this.wrongChoiceSelected} key={choice}>
-              <Text>{choice}</Text>
-            </TouchableHighlight>
-          );
-        } else {
-          return (
-            <TouchableHighlight underlayColor={styles.rightChoice} style={styles.choice} onPress={this.rightChoiceSelected} key={CorrectAnswer}>
-              <Text>{CorrectAnswer}</Text>
-            </TouchableHighlight>
-          );
-        }
+        return (
+          <TouchableOpacity
+            style={styles.button}
+            onPress={choice !== CorrectAnswer ? this.wrongChoiceSelected : this.rightChoiceSelected}
+            key={choice}
+          >
+            <Text>{choice}</Text>
+          </TouchableOpacity>
+        );
       });
     };
 
@@ -91,9 +87,9 @@ export default class App extends React.Component {
         return (
           <View style={styles.main}>
             <Text>{correctPerc}% correct!</Text>
-            <TouchableHighlight underlayColor='#00f' onPress={this.reset} style={styles.reset}>
-              <Text>Try again</Text>
-            </TouchableHighlight>
+            <TouchableOpacity onPress={this.reset} style={styles.button}>
+              <Text>Try Again</Text>
+            </TouchableOpacity>
           </View>
         );
       }
@@ -121,29 +117,24 @@ const styles = {
     fontSize: 100,
     color: 'black'
   },
-  rightChoice: '#0C0',
-  wrongChoice: '#C00',
   choices: {
-    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+    flexWrap: 'wrap'
+  },
+  button: {
+    alignItems: 'center',
+    backgroundColor: 'white',
+    borderColor: '#CCC',
+    borderRadius: 12,
+    borderWidth: 1,
+    color: 'white',
     justifyContent: 'space-around',
-    alignItems: 'center'
-  },
-  choice: {
-    borderWidth: 2,
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: 50,
-    height: 50,
-    borderRadius: 50,
-    margin: 2
-  },
-  reset: {
-    borderWidth: 3,
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: 75,
-    height: 50,
-    borderRadius: 5
+    margin: 6,
+    overflow: 'hidden',
+    padding: 10,
+    width: 180
   },
   info: {
     alignSelf: 'stretch',
