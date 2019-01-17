@@ -1,7 +1,7 @@
 'use strict';
 
 import React from 'react';
-import { StyleSheet, Text, View, TouchableHighlight } from 'react-native';
+import { Text, View, TouchableHighlight } from 'react-native';
 import shuffle from 'knuth';
 import KatakanaMap from './katakanamap';
 
@@ -32,34 +32,35 @@ export default class App extends React.Component {
   };
   showKatakanaToSolve = () => (<View><Text style={styles.katakana}>{this.state.katakanaToSolve[0]}</Text></View>);
 
+  // TODO: refactor to bring down cyclomatix complexity to 2 (currently it's at 3)
   showChoices = () => {
     const KatakanaToSolve = this.state.katakanaToSolve[0];
     const CorrectAnswer = KatakanaMap[KatakanaToSolve];
 
     // build some noise (wrong answers)
-    let wrongChoices = [];
+    const wrongChoices = [];
     while (wrongChoices.length < 3) {
-      let randomKatakana = pickRandomProperty(KatakanaMap);
-      if (randomKatakana !== KatakanaToSolve) {
+      const randomKatakana = pickRandomProperty(KatakanaMap);
+      if (randomKatakana !== KatakanaToSolve && !wrongChoices.includes(KatakanaMap[randomKatakana])) {
         wrongChoices.push(KatakanaMap[randomKatakana]);
       }
     }
 
     // build the elements
-    let allChoices = wrongChoices.concat(CorrectAnswer);
+    const allChoices = wrongChoices.concat(CorrectAnswer);
     shuffle(allChoices);
 
     const renderChoices = () => {
       return allChoices.map(choice => {
         if (choice !== CorrectAnswer) {
           return (
-            <TouchableHighlight underlayColor={styles.wrongChoice} style={styles.choice} onPress={this.wrongChoiceSelected}>
+            <TouchableHighlight underlayColor={styles.wrongChoice} style={styles.choice} onPress={this.wrongChoiceSelected} key={choice}>
               <Text>{choice}</Text>
             </TouchableHighlight>
           );
         } else {
           return (
-            <TouchableHighlight underlayColor={styles.rightChoice} style={styles.choice} onPress={this.rightChoiceSelected}>
+            <TouchableHighlight underlayColor={styles.rightChoice} style={styles.choice} onPress={this.rightChoiceSelected} key={CorrectAnswer}>
               <Text>{CorrectAnswer}</Text>
             </TouchableHighlight>
           );
@@ -76,19 +77,20 @@ export default class App extends React.Component {
 
   render() {
     const { correct, total } = this.state;
+    const remaining = this.state.katakanaToSolve.length;
     const show = () => {
-      if (this.state.katakanaToSolve.length) {
+      if (remaining) {
         return (
           <View style={styles.main}>
-            { this.showKatakanaToSolve() }
-            { this.showChoices() }
+            {this.showKatakanaToSolve()}
+            {this.showChoices()}
           </View>
         );
       } else {
-        const x = Math.round((correct / total * 100 + 0.00001) * 100) / 100;
+        const correctPerc = Math.round(correct / total * 100);
         return (
           <View style={styles.main}>
-            <Text>{ x }% correct!</Text>
+            <Text>{correctPerc}% correct!</Text>
             <TouchableHighlight underlayColor='#00f' onPress={this.reset} style={styles.reset}>
               <Text>Try again</Text>
             </TouchableHighlight>
@@ -100,9 +102,9 @@ export default class App extends React.Component {
       <View style={styles.container}>
         <View style={styles.info}>
           <View><Text style={styles.infoText}>Correct: {correct} / {total}</Text></View>
-          <View><Text style={styles.infoText}>Remaining: {this.state.katakanaToSolve.length}</Text></View>
+          <View><Text style={styles.infoText}>Remaining: {remaining}</Text></View>
         </View>
-        { show() }
+        {show()}
       </View>
     );
   }
@@ -163,7 +165,7 @@ const styles = {
 const pickRandomProperty = obj => {
   let result;
   let count = 0;
-  for (var prop in obj)
+  for (const prop in obj)
     if (Math.random() < 1 / ++count) result = prop;
   return result;
 };
