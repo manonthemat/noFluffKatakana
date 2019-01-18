@@ -6,3 +6,5 @@ There are no ads, no internet access is required once the app is downloaded, no 
 Furthermore, you can inspect and improve the source code through the website.
 
 This is not a tool to learn katakana (even though it could be used for that), but to improve recognition (speed) of katakana.
+
+Published as Android app in [Google Play Store](https://play.google.com/store/apps/details?id=com.manonthemat.nofluffkatakana).
