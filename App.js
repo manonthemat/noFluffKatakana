@@ -1,7 +1,7 @@
 'use strict';
 
 import React from 'react';
-import { Text, View, TouchableOpacity } from 'react-native';
+import { FlatList, Text, TouchableOpacity, View } from 'react-native';
 import shuffle from 'knuth';
 import KatakanaMap from './katakanamap';
 
@@ -10,7 +10,8 @@ export default class App extends React.Component {
     return {
       katakanaToSolve: shuffle(Object.keys(KatakanaMap)),
       correct: 0,
-      total: 0
+      total: 0,
+      mistakes: []
     };
   };
   state = this.defaultState();
@@ -24,10 +25,12 @@ export default class App extends React.Component {
       total: this.state.total + 1
     });
   };
-  wrongChoiceSelected = () => {
+  wrongChoiceSelected = (katakana, romaji) => {
+    const mistakes = [...this.state.mistakes, { key: katakana, romaji }];
     this.setState({
       katakanaToSolve: this.state.katakanaToSolve.splice(1),
-      total: this.state.total + 1
+      total: this.state.total + 1,
+      mistakes
     });
   };
   showKatakanaToSolve = () => (<View><Text style={styles.katakana}>{this.state.katakanaToSolve[0]}</Text></View>);
@@ -55,7 +58,7 @@ export default class App extends React.Component {
         return (
           <TouchableOpacity
             style={styles.button}
-            onPress={choice !== CorrectAnswer ? this.wrongChoiceSelected : this.rightChoiceSelected}
+            onPress={(e) => {choice !== CorrectAnswer ? this.wrongChoiceSelected(KatakanaToSolve, CorrectAnswer) : this.rightChoiceSelected(e)}}
             key={choice}
           >
             <Text>{choice}</Text>
@@ -90,6 +93,7 @@ export default class App extends React.Component {
             <TouchableOpacity onPress={this.reset} style={styles.button}>
               <Text>Try Again</Text>
             </TouchableOpacity>
+            <MistakesSummary mistakes={this.state.mistakes} />
           </View>
         );
       }
@@ -104,6 +108,24 @@ export default class App extends React.Component {
       </View>
     );
   }
+}
+
+function MistakesSummary(props) {
+  if (!props.mistakes.length) return null;
+  return (
+      <FlatList
+        contentContainerStyle={{ justifyContent: 'space-around' }}
+        data={props.mistakes}
+        numColumns={3}
+        ListHeaderComponent={
+          () => <Text>Pay attention to these katakana-romaji pairs.</Text>
+        }
+        renderItem={
+          ({item}) => <Text style={{ width: 100 }}>{item.key}: {item.romaji}</Text>
+        }
+      >
+      </FlatList>
+  );
 }
 
 const styles = {
