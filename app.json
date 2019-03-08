@@ -27,7 +27,8 @@
     },
     "android": {
       "package": "com.manonthemat.nofluffkatakana",
-      "permissions": []
+      "permissions": [],
+      "versionCode": 2
     }
   }
 }
